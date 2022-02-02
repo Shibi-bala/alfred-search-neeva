@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string></string>
+	<key>category</key>
+	<string>Internet</string>
+	<key>connections</key>
+	<dict>
+		<key>63F60794-BB56-4415-9372-BAF974C3A7E1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9C45522D-524A-4811-AB16-68646B241903</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Shibi B</string>
+	<key>description</key>
+	<string>Get Neeva Search Suggestions</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Neeva Suggest</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>36</integer>
+				<key>keyword</key>
+				<string>n</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Retrieving search suggestions ...</string>
+				<key>script</key>
+				<string>&lt;?php
+
+require_once('workflows.php');
+$wf = new Workflows();
+
+$orig = $argv[1];
+
+$orig = str_replace(" ", "%20", $orig);
+
+$out = file_get_contents("https://neeva.com/graphql/GetSuggestions?query=query%20GetSuggestions(%24query%3A%20String!%2C%20%24enableDebug%3A%20Boolean%20%3D%20false%2C%20%24debugParams%3A%20String%2C%20%24corpusType%3A%20CorpusType%20%3D%20All%2C%20%24locationBoundaries%3A%20SuggestLocationBoundaries)%20%7B%0A%20%20suggest(%0A%20%20%20%20q%3A%20%24query%0A%20%20%20%20debugParams%3A%20%24debugParams%0A%20%20%20%20corpusType%3A%20%24corpusType%0A%20%20%20%20locationBoundaries%3A%20%24locationBoundaries%0A%20%20)%20%7B%0A%20%20%20%20requestID%0A%20%20%20%20querySuggestion%20%7B%0A%20%20%20%20%20%20type%0A%20%20%20%20%20%20suggestedQuery%0A%20%20%20%20%20%20annotation%20%7B%0A%20%20%20%20%20%20%20%20annotationType%0A%20%20%20%20%20%20%20%20description%0A%20%20%20%20%20%20%20%20imageURL%0A%20%20%20%20%20%20%20%20stockInfo%20%7B%0A%20%20%20%20%20%20%20%20%20%20companyName%0A%20%20%20%20%20%20%20%20%20%20ticker%0A%20%20%20%20%20%20%20%20%20%20currentPrice%0A%20%20%20%20%20%20%20%20%20%20changeFromPreviousClose%0A%20%20%20%20%20%20%20%20%20%20percentChangeFromPreviousClose%0A%20%20%20%20%20%20%20%20%20%20fetchedAtTime%0A%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20boldSpan%20%7B%0A%20%20%20%20%20%20%20%20startInclusive%0A%20%20%20%20%20%20%20%20endExclusive%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20score%20%40include(if%3A%20%24enableDebug)%0A%20%20%20%20%20%20source%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20urlSuggestion%20%7B%0A%20%20%20%20%20%20icon%20%7B%0A%20%20%20%20%20%20%20%20labels%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20suggestedURL%0A%20%20%20%20%20%20title%0A%20%20%20%20%20%20author%0A%20%20%20%20%20%20timestamp%0A%20%20%20%20%20%20boldSpan%20%7B%0A%20%20%20%20%20%20%20%20startInclusive%0A%20%20%20%20%20%20%20%20endExclusive%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20source%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20mapsSuggestion%20%7B%0A%20%20%20%20%20%20type%0A%20%20%20%20%20%20name%0A%20%20%20%20%20%20address%20%7B%0A%20%20%20%20%20%20%20%20houseNumber%0A%20%20%20%20%20%20%20%20streetName%0A%20%20%20%20%20%20%20%20addressLine%0A%20%20%20%20%20%20%20%20locality%0A%20%20%20%20%20%20%20%20adminDistrict2%0A%20%20%20%20%20%20%20%20adminDistrict%0A%20%20%20%20%20%20%20%20countryRegion%0A%20%20%20%20%20%20%20%20countryRegionIso2%0A%20%20%20%20%20%20%20%20neighborhood%0A%20%20%20%20%20%20%20%20postalCode%0A%20%20%20%20%20%20%20%20formattedAddress%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20lenseSuggestion%20%7B%0A%20%20%20%20%20%20shortcut%0A%20%20%20%20%20%20description%0A%20%20%20%20%20%20sites%0A%20%20%20%20%20%20corpus%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20bangSuggestion%20%7B%0A%20%20%20%20%20%20shortcut%0A%20%20%20%20%20%20description%0A%20%20%20%20%20%20searchURL%0A%20%20%20%20%20%20url%0A%20%20%20%20%20%20domain%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20activeLensBangInfo%20%7B%0A%20%20%20%20%20%20domain%0A%20%20%20%20%20%20shortcut%0A%20%20%20%20%20%20description%0A%20%20%20%20%20%20type%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20querySuggestOnTop%0A%20%20%20%20query%20%40include(if%3A%20%24enableDebug)%0A%20%20%20%20debug%20%40include(if%3A%20%24enableDebug)%20%7B%0A%20%20%20%20%20%20queryString%0A%20%20%20%20%20%20debugPerSource%20%7B%0A%20%20%20%20%20%20%20%20source%0A%20%20%20%20%20%20%20%20debugSuggestions%20%7B%0A%20%20%20%20%20%20%20%20%20%20suggestion%0A%20%20%20%20%20%20%20%20%20%20output%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20name%0A%20%20%20%20%20%20%20%20%20%20%20%20data%0A%20%20%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20__typename%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20__typename%0A%20%20%20%20%7D%0A%20%20%20%20__typename%0A%20%20%7D%0A%7D%0A&amp;operationName=GetSuggestions&amp;variables=%7B%22enableDebug%22%3Afalse%2C%22corpusType%22%3A%22All%22%2C%22query%22%3A%22" . $orig . "%22%7D" );
+
+$json = json_decode( utf8_encode($out) );
+$json = $json-&gt;data-&gt;suggest-&gt;querySuggestion;
+$int = 1;
+
+if ($json) {
+	foreach( $json as $sugg ):
+		$data = $sugg-&gt;suggestedQuery;
+		$wf-&gt;result( $int.'.'.time(), "$data", "$data", 'Search Neeva for '.$data, 'icon.png'  );
+		$int++;
+	endforeach;
+}
+
+$results = $wf-&gt;results();
+if ( count( $results ) == 0 ):
+	$wf-&gt;result( 'googlesuggest', $orig, 'No Suggestions', 'No search suggestions found. Search Neeva for '.$orig, 'icon.png' );
+endif;
+
+echo $wf-&gt;toxml();
+
+?&gt;</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Search Neeva with Suggestions</string>
+				<key>title</key>
+				<string>Search Neeva</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>63F60794-BB56-4415-9372-BAF974C3A7E1</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>https://neeva.com/search?q={query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>9C45522D-524A-4811-AB16-68646B241903</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>This workflow gives you suggested search options for Neeva.</string>
+	<key>uidata</key>
+	<dict>
+		<key>63F60794-BB56-4415-9372-BAF974C3A7E1</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>65</integer>
+		</dict>
+		<key>9C45522D-524A-4811-AB16-68646B241903</key>
+		<dict>
+			<key>xpos</key>
+			<integer>255</integer>
+			<key>ypos</key>
+			<integer>70</integer>
+		</dict>
+	</dict>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>1.1</string>
+	<key>webaddress</key>
+	<string></string>
+</dict>
+</plist>
